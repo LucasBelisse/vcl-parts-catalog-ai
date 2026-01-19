@@ -1,4 +1,3 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -6,23 +5,23 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Mapping between category IDs and exact sheet names
-const categoryToSheetName: Record<string, string> = {
-  "telas-frontais": "TELAS E FRONTAIS",
-  "sub-placa-conectores": "SUB PLACA, CONECTORES E DOCKS",
-  "conectores-soltos": "CONECTORES SOLTOS",
-  "ferramentas-colas": "FERRAMENTAS E COLAS",
-  "baterias": "BATERIAS",
-  "aro-chassi-tampas": "ARO CHASSI, TAMPAS E CARCAÇAS",
-  "flex-power-volume": "FLEX POWER E FLEX VOLUME",
-  "lentes-vidro-camera": "LENTES E VIDRO DA CÂMERA",
-  "botoes-externos-power": "BOTOES EXTERNOS E BOTOES POWER",
-  "digitais-biometrias": "DIGITAIS E BIOMETRIAS",
-  "cameras": "CÂMERAS",
-  "gavetas": "GAVETAS",
-  "flex-lcd": "FLEX LCD",
-  "campainhas-auriculares": "CAMPAINHAS E AURICULARES",
-  "flex-flash": "FLEX FLASH",
+// Mapping between CSV categories and our category IDs
+const categoryMapping: Record<string, string> = {
+  "tela e frontal": "telas-frontais",
+  "sub placa, conectores e docks": "sub-placa-conectores",
+  "conector solto": "conectores-soltos",
+  "ferramentas e colas": "ferramentas-colas",
+  "bateria": "baterias",
+  "aro chassi, tampas e carcaças": "aro-chassi-tampas",
+  "flex power e flex volume": "flex-power-volume",
+  "lentes e vidro da câmera": "lentes-vidro-camera",
+  "botoes externos e botoes power": "botoes-externos-power",
+  "digital e biometria": "digitais-biometrias",
+  "câmera": "cameras",
+  "gaveta": "gavetas",
+  "flex lcd": "flex-lcd",
+  "campainha e auricular": "campainhas-auriculares",
+  "flex flash": "flex-flash",
 };
 
 interface Product {
@@ -32,59 +31,38 @@ interface Product {
   categoria: string;
 }
 
-async function fetchSheetData(apiKey: string, spreadsheetId: string, sheetName: string): Promise<Product[]> {
-  const encodedSheetName = encodeURIComponent(sheetName);
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodedSheetName}!A:B?key=${apiKey}`;
+function parseCSV(csvText: string): string[][] {
+  const lines = csvText.split('\n');
+  const result: string[][] = [];
   
-  console.log(`Fetching data from sheet: ${sheetName}`);
-  console.log(`Spreadsheet ID: ${spreadsheetId}`);
-  console.log(`API Key (first 10 chars): ${apiKey?.substring(0, 10)}...`);
-  
-  try {
-    const response = await fetch(url);
-    const responseText = await response.text();
-    
-    if (!response.ok) {
-      console.error(`Error fetching sheet ${sheetName}: ${response.status} ${response.statusText}`);
-      console.error(`Response body: ${responseText}`);
-      return [];
-    }
-    
-    const data = JSON.parse(responseText);
-    
-    if (!data.values || data.values.length === 0) {
-      console.log(`No data found in sheet: ${sheetName}`);
-      return [];
-    }
-    
-    // Find the category ID from sheet name
-    const categoryId = Object.entries(categoryToSheetName)
-      .find(([_, name]) => name === sheetName)?.[0] || "";
-    
-    // Skip header row and map data
-    const products: Product[] = [];
-    for (let i = 1; i < data.values.length; i++) {
-      const row = data.values[i];
-      if (row[0] && row[0].toString().trim()) {
-        const modelo = row[0].toString().trim();
-        // Keep the original price format from the spreadsheet (already in R$)
-        const preco = row[1] ? row[1].toString().trim() : "Consulte";
-        
-        products.push({
-          id: `${categoryId}-${i}`,
-          modelo,
-          preco,
-          categoria: categoryId,
-        });
+  for (const line of lines) {
+    if (line.trim()) {
+      // CSV parsing that handles quoted fields
+      const cells: string[] = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          cells.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
       }
+      cells.push(current.trim());
+      result.push(cells);
     }
-    
-    console.log(`Found ${products.length} products in sheet: ${sheetName}`);
-    return products;
-  } catch (error) {
-    console.error(`Exception fetching sheet ${sheetName}:`, error);
-    return [];
   }
+  
+  return result;
+}
+
+function normalizeCategoryName(name: string): string {
+  return name.toLowerCase().trim();
 }
 
 serve(async (req) => {
@@ -94,35 +72,93 @@ serve(async (req) => {
   }
 
   try {
-    const apiKey = Deno.env.get('GOOGLE_SHEETS_API_KEY');
-    const spreadsheetId = Deno.env.get('GOOGLE_SHEETS_SPREADSHEET_ID');
+    // Public CSV URL
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRgbH5V636CdwX4-5j7IvvwkDPMa_7MtigYxCOb5laRARo-Y2RjSnH8YCZYnKgLC_oSL3NknQY3gyBr/pub?output=csv";
 
-    if (!apiKey || !spreadsheetId) {
-      console.error('Missing required environment variables');
+    console.log('Fetching products from public CSV...');
+    
+    const response = await fetch(csvUrl);
+    
+    if (!response.ok) {
+      console.error(`Error fetching CSV: ${response.status} ${response.statusText}`);
       return new Response(
-        JSON.stringify({ error: 'Missing configuration' }),
+        JSON.stringify({ error: 'Failed to fetch products' }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
     }
-
-    console.log('Starting to fetch products from all sheets...');
     
-    // Fetch all sheets in parallel
-    const allSheetNames = Object.values(categoryToSheetName);
-    const promises = allSheetNames.map(sheetName => 
-      fetchSheetData(apiKey, spreadsheetId, sheetName)
-    );
+    const csvText = await response.text();
+    const rows = parseCSV(csvText);
     
-    const results = await Promise.all(promises);
-    const allProducts = results.flat();
+    console.log(`Parsed ${rows.length} rows from CSV`);
     
-    console.log(`Total products fetched: ${allProducts.length}`);
+    if (rows.length === 0) {
+      return new Response(
+        JSON.stringify({ products: [] }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    // Get header indices
+    const headerRow = rows[0].map(h => h.toLowerCase().trim());
+    const categoriaIndex = headerRow.indexOf('categoria');
+    const modeloIndex = headerRow.indexOf('modelo');
+    const precoIndex = headerRow.indexOf('preco');
+    const variacaoIndex = headerRow.indexOf('variacao');
+    
+    console.log(`Headers: ${headerRow.join(', ')}`);
+    console.log(`Indices - categoria: ${categoriaIndex}, modelo: ${modeloIndex}, preco: ${precoIndex}, variacao: ${variacaoIndex}`);
+    
+    if (modeloIndex === -1) {
+      console.error('MODELO column not found');
+      return new Response(
+        JSON.stringify({ error: 'Invalid CSV format - MODELO column not found' }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+    
+    // Process all rows
+    const products: Product[] = [];
+    const categoryCount: Record<string, number> = {};
+    
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      const rawCategoria = categoriaIndex !== -1 ? row[categoriaIndex] : '';
+      const modelo = row[modeloIndex]?.trim();
+      const preco = precoIndex !== -1 && row[precoIndex] ? row[precoIndex].trim() : 'Consulte';
+      const variacao = variacaoIndex !== -1 && row[variacaoIndex] ? row[variacaoIndex].trim() : '';
+      
+      if (!modelo) continue;
+      
+      // Map the CSV category to our category ID
+      const normalizedCat = normalizeCategoryName(rawCategoria);
+      const categoriaId = categoryMapping[normalizedCat] || 'outros';
+      
+      // Track category counts for logging
+      categoryCount[categoriaId] = (categoryCount[categoriaId] || 0) + 1;
+      
+      // Combine modelo with variacao for full product name if variacao exists
+      const fullModelo = variacao ? `${modelo} - ${variacao}` : modelo;
+      
+      products.push({
+        id: `${categoriaId}-${i}`,
+        modelo: fullModelo,
+        preco,
+        categoria: categoriaId,
+      });
+    }
+    
+    console.log('Products by category:', JSON.stringify(categoryCount));
+    console.log(`Total products fetched: ${products.length}`);
 
     return new Response(
-      JSON.stringify({ products: allProducts }),
+      JSON.stringify({ products }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
