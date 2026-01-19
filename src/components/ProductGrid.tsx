@@ -1,6 +1,6 @@
-import { type Product } from "@/data/products";
 import ProductCard from "./ProductCard";
 import { PackageSearch } from "lucide-react";
+import type { Product } from "@/hooks/useProducts";
 
 interface ProductGridProps {
   products: Product[];

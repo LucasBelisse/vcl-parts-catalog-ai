@@ -1,14 +1,21 @@
 import { MessageCircle, Package } from "lucide-react";
-import { type Product, formatPrice, generateWhatsAppLink } from "@/data/products";
 import { categories } from "@/data/categories";
+import type { Product } from "@/hooks/useProducts";
 
 interface ProductCardProps {
   product: Product;
 }
 
+const generateWhatsAppLink = (modelo: string, preco: string): string => {
+  const phone = "5500000000000"; // Substituir pelo número real
+  const message = encodeURIComponent(
+    `Olá VCL PEÇAS, tenho interesse no item ${modelo} que vi no catálogo por ${preco}. Está disponível?`
+  );
+  return `https://wa.me/${phone}?text=${message}`;
+};
+
 const ProductCard = ({ product }: ProductCardProps) => {
-  const priceFormatted = formatPrice(product.preco);
-  const whatsappLink = generateWhatsAppLink(product.modelo, priceFormatted);
+  const whatsappLink = generateWhatsAppLink(product.modelo, product.preco);
   const category = categories.find((c) => c.id === product.categoria);
 
   return (
@@ -32,7 +39,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <h3 className="model-name text-center mb-2">{product.modelo}</h3>
 
       {/* Price */}
-      <p className="price-tag text-center mb-4">{priceFormatted}</p>
+      <p className="price-tag text-center mb-4">{product.preco}</p>
 
       {/* WhatsApp button */}
       <a
