@@ -6,20 +6,39 @@ const corsHeaders = {
 };
 
 // Mapping between CSV categories and our category IDs
+// The CSV uses category names that should match the app's filter buttons
 const categoryMapping: Record<string, string> = {
+  // Exact matches (lowercase normalized)
+  "telas e frontais": "telas-frontais",
   "tela e frontal": "telas-frontais",
   "sub placa, conectores e docks": "sub-placa-conectores",
+  "sub-placa, conectores e docks": "sub-placa-conectores",
+  "conectores soltos": "conectores-soltos",
   "conector solto": "conectores-soltos",
   "ferramentas e colas": "ferramentas-colas",
+  "ferramenta e cola": "ferramentas-colas",
+  "baterias": "baterias",
   "bateria": "baterias",
   "aro chassi, tampas e carcaças": "aro-chassi-tampas",
+  "aro chassi, tampas e carcacas": "aro-chassi-tampas",
+  "aro, chassi, tampas e carcaças": "aro-chassi-tampas",
   "flex power e flex volume": "flex-power-volume",
   "lentes e vidro da câmera": "lentes-vidro-camera",
+  "lentes e vidro da camera": "lentes-vidro-camera",
   "botoes externos e botoes power": "botoes-externos-power",
+  "botões externos e botões power": "botoes-externos-power",
+  "botoes externos e botao power": "botoes-externos-power",
+  "botão externo e botão power": "botoes-externos-power",
+  "digitais e biometrias": "digitais-biometrias",
   "digital e biometria": "digitais-biometrias",
+  "câmeras": "cameras",
+  "cameras": "cameras",
   "câmera": "cameras",
+  "camera": "cameras",
+  "gavetas": "gavetas",
   "gaveta": "gavetas",
   "flex lcd": "flex-lcd",
+  "campainhas e auriculares": "campainhas-auriculares",
   "campainha e auricular": "campainhas-auriculares",
   "flex flash": "flex-flash",
 };
@@ -126,6 +145,7 @@ serve(async (req) => {
     // Process all rows
     const products: Product[] = [];
     const categoryCount: Record<string, number> = {};
+    const unmappedCategories: Set<string> = new Set();
     
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i];
@@ -139,6 +159,11 @@ serve(async (req) => {
       // Map the CSV category to our category ID
       const normalizedCat = normalizeCategoryName(rawCategoria);
       const categoriaId = categoryMapping[normalizedCat] || 'outros';
+      
+      // Track unmapped categories
+      if (categoriaId === 'outros' && rawCategoria) {
+        unmappedCategories.add(rawCategoria);
+      }
       
       // Track category counts for logging
       categoryCount[categoriaId] = (categoryCount[categoriaId] || 0) + 1;
@@ -155,6 +180,7 @@ serve(async (req) => {
     }
     
     console.log('Products by category:', JSON.stringify(categoryCount));
+    console.log('Unmapped categories:', Array.from(unmappedCategories).join(', '));
     console.log(`Total products fetched: ${products.length}`);
 
     return new Response(
