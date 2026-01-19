@@ -37,16 +37,20 @@ async function fetchSheetData(apiKey: string, spreadsheetId: string, sheetName: 
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodedSheetName}!A:B?key=${apiKey}`;
   
   console.log(`Fetching data from sheet: ${sheetName}`);
+  console.log(`Spreadsheet ID: ${spreadsheetId}`);
+  console.log(`API Key (first 10 chars): ${apiKey?.substring(0, 10)}...`);
   
   try {
     const response = await fetch(url);
+    const responseText = await response.text();
     
     if (!response.ok) {
       console.error(`Error fetching sheet ${sheetName}: ${response.status} ${response.statusText}`);
+      console.error(`Response body: ${responseText}`);
       return [];
     }
     
-    const data = await response.json();
+    const data = JSON.parse(responseText);
     
     if (!data.values || data.values.length === 0) {
       console.log(`No data found in sheet: ${sheetName}`);
