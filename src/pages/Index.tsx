@@ -2,10 +2,11 @@ import { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import SearchBar from "@/components/SearchBar";
 import CategoryFilter from "@/components/CategoryFilter";
+import CategoryHeader from "@/components/CategoryHeader";
 import ProductGrid from "@/components/ProductGrid";
 import ResultsCounter from "@/components/ResultsCounter";
 import { useProducts } from "@/hooks/useProducts";
-import { categories, type CategoryId } from "@/data/categories";
+import { type CategoryId } from "@/data/categories";
 import { Loader2 } from "lucide-react";
 
 const Index = () => {
@@ -26,27 +27,43 @@ const Index = () => {
     });
   }, [products, searchQuery, activeCategory]);
 
-  const activeCategoryName = activeCategory
-    ? categories.find((c) => c.id === activeCategory)?.name
-    : undefined;
+  const handleBackToMenu = () => {
+    setActiveCategory(null);
+    setSearchQuery("");
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
       <main className="container mx-auto px-4 py-6 space-y-5">
-        {/* Search Section */}
-        <section>
-          <SearchBar value={searchQuery} onChange={setSearchQuery} />
-        </section>
+        {/* Menu de Categorias (quando nenhuma está selecionada) */}
+        {!activeCategory && (
+          <>
+            <section>
+              <SearchBar value={searchQuery} onChange={setSearchQuery} />
+            </section>
+            <section>
+              <CategoryFilter
+                activeCategory={activeCategory}
+                onCategoryChange={setActiveCategory}
+              />
+            </section>
+          </>
+        )}
 
-        {/* Category Filter */}
-        <section>
-          <CategoryFilter
-            activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
-          />
-        </section>
+        {/* Visualização de Categoria Específica */}
+        {activeCategory && (
+          <>
+            <CategoryHeader 
+              categoryId={activeCategory} 
+              onBack={handleBackToMenu} 
+            />
+            <section>
+              <SearchBar value={searchQuery} onChange={setSearchQuery} />
+            </section>
+          </>
+        )}
 
         {/* Loading State */}
         {isLoading && (
@@ -66,13 +83,10 @@ const Index = () => {
           </div>
         )}
 
-        {/* Results */}
-        {!isLoading && !error && (
+        {/* Produtos (só mostra quando uma categoria está selecionada) */}
+        {!isLoading && !error && activeCategory && (
           <>
-            <ResultsCounter
-              count={filteredProducts.length}
-              categoryName={activeCategoryName}
-            />
+            <ResultsCounter count={filteredProducts.length} />
             <section>
               <ProductGrid products={filteredProducts} />
             </section>
