@@ -24,7 +24,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
     <div className="product-card animate-fade-in">
       {/* Category badge */}
       <div className="flex items-center gap-1.5 mb-3">
-        {CategoryIcon && <CategoryIcon className="h-4 w-4 text-muted-foreground" />}
+        {CategoryIcon && <CategoryIcon className="h-4 w-4" style={{ color: category?.color }} />}
         <span className="text-xs font-medium text-muted-foreground truncate">
           {category?.name}
         </span>
