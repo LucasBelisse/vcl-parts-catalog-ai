@@ -8,35 +8,32 @@ interface CategoryFilterProps {
 
 const CategoryFilter = ({ activeCategory, onCategoryChange }: CategoryFilterProps) => {
   return (
-    <div className="relative">
-      <div className="overflow-x-auto hide-scrollbar py-1">
-        <div className="flex gap-2 px-1 min-w-max">
+    <div className="w-full px-2">
+      <div className="grid grid-cols-3 gap-2">
+        <button
+          onClick={() => onCategoryChange(null)}
+          className={cn(
+            "category-pill flex flex-col items-center justify-center text-center py-3 px-2 min-h-[70px]",
+            activeCategory === null && "category-pill-active"
+          )}
+        >
+          <span className="text-lg mb-1">📋</span>
+          <span className="text-xs leading-tight">Todos</span>
+        </button>
+        {categories.map((category) => (
           <button
-            onClick={() => onCategoryChange(null)}
+            key={category.id}
+            onClick={() => onCategoryChange(category.id as CategoryId)}
             className={cn(
-              "category-pill",
-              activeCategory === null && "category-pill-active"
+              "category-pill flex flex-col items-center justify-center text-center py-3 px-2 min-h-[70px]",
+              activeCategory === category.id && "category-pill-active"
             )}
           >
-            📋 Todos
+            <span className="text-lg mb-1">{category.icon}</span>
+            <span className="text-xs leading-tight line-clamp-2">{category.name}</span>
           </button>
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => onCategoryChange(category.id as CategoryId)}
-              className={cn(
-                "category-pill",
-                activeCategory === category.id && "category-pill-active"
-              )}
-            >
-              {category.icon} {category.name}
-            </button>
-          ))}
-        </div>
+        ))}
       </div>
-      {/* Gradient fade on edges */}
-      <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-background to-transparent pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-background to-transparent pointer-events-none" />
     </div>
   );
 };
