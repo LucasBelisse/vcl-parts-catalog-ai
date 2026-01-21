@@ -32,7 +32,7 @@ const CategoryFilter = ({ activeCategory, onCategoryChange }: CategoryFilterProp
                 activeCategory === category.id && "category-pill-active"
               )}
             >
-              <IconComponent className="h-5 w-5 mb-1" />
+              <IconComponent className="h-5 w-5 mb-1" style={{ color: category.color }} />
               <span className="text-xs leading-tight line-clamp-2">{category.name}</span>
             </button>
           );

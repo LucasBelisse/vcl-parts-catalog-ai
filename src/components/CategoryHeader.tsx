@@ -23,7 +23,7 @@ const CategoryHeader = ({ categoryId, onBack }: CategoryHeaderProps) => {
         <ArrowLeft className="h-6 w-6 text-foreground" />
       </button>
       <div className="flex items-center gap-3">
-        <IconComponent className="h-8 w-8 text-primary" />
+        <IconComponent className="h-8 w-8" style={{ color: category.color }} />
         <h1 className="text-xl font-bold text-foreground">{category.name}</h1>
       </div>
     </div>
