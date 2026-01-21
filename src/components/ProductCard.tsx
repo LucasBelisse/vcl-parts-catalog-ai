@@ -18,11 +18,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const whatsappLink = generateWhatsAppLink(product.modelo, product.preco);
   const category = categories.find((c) => c.id === product.categoria);
 
+  const CategoryIcon = category?.icon;
+
   return (
     <div className="product-card animate-fade-in">
       {/* Category badge */}
       <div className="flex items-center gap-1.5 mb-3">
-        <span className="text-sm">{category?.icon}</span>
+        {CategoryIcon && <CategoryIcon className="h-4 w-4 text-muted-foreground" />}
         <span className="text-xs font-medium text-muted-foreground truncate">
           {category?.name}
         </span>

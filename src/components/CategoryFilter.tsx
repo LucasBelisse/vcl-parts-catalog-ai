@@ -1,5 +1,6 @@
 import { categories, type CategoryId } from "@/data/categories";
 import { cn } from "@/lib/utils";
+import { LayoutGrid } from "lucide-react";
 
 interface CategoryFilterProps {
   activeCategory: CategoryId | null;
@@ -17,22 +18,25 @@ const CategoryFilter = ({ activeCategory, onCategoryChange }: CategoryFilterProp
             activeCategory === null && "category-pill-active"
           )}
         >
-          <span className="text-lg mb-1">📋</span>
+          <LayoutGrid className="h-5 w-5 mb-1" />
           <span className="text-xs leading-tight">Todos</span>
         </button>
-        {categories.map((category) => (
-          <button
-            key={category.id}
-            onClick={() => onCategoryChange(category.id as CategoryId)}
-            className={cn(
-              "category-pill flex flex-col items-center justify-center text-center py-3 px-2 min-h-[70px]",
-              activeCategory === category.id && "category-pill-active"
-            )}
-          >
-            <span className="text-lg mb-1">{category.icon}</span>
-            <span className="text-xs leading-tight line-clamp-2">{category.name}</span>
-          </button>
-        ))}
+        {categories.map((category) => {
+          const IconComponent = category.icon;
+          return (
+            <button
+              key={category.id}
+              onClick={() => onCategoryChange(category.id as CategoryId)}
+              className={cn(
+                "category-pill flex flex-col items-center justify-center text-center py-3 px-2 min-h-[70px]",
+                activeCategory === category.id && "category-pill-active"
+              )}
+            >
+              <IconComponent className="h-5 w-5 mb-1" />
+              <span className="text-xs leading-tight line-clamp-2">{category.name}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

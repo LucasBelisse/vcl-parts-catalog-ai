@@ -11,6 +11,8 @@ const CategoryHeader = ({ categoryId, onBack }: CategoryHeaderProps) => {
 
   if (!category) return null;
 
+  const IconComponent = category.icon;
+
   return (
     <div className="flex items-center gap-3 py-4 px-2">
       <button
@@ -21,7 +23,7 @@ const CategoryHeader = ({ categoryId, onBack }: CategoryHeaderProps) => {
         <ArrowLeft className="h-6 w-6 text-foreground" />
       </button>
       <div className="flex items-center gap-3">
-        <span className="text-3xl">{category.icon}</span>
+        <IconComponent className="h-8 w-8 text-primary" />
         <h1 className="text-xl font-bold text-foreground">{category.name}</h1>
       </div>
     </div>
