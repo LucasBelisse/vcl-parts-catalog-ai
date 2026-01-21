@@ -6,17 +6,17 @@ interface ProductCardProps {
   product: Product;
 }
 
-const generateWhatsAppLink = (modelo: string, preco: string): string => {
-  const phone = "5500000000000"; // Substituir pelo número real
+const generateWhatsAppLink = (modelo: string, categoria: string, preco: string): string => {
+  const phone = "5511981707146";
   const message = encodeURIComponent(
-    `Olá VCL PEÇAS, tenho interesse no item ${modelo} que vi no catálogo por ${preco}. Está disponível?`
+    `Olá, VCL Peças! Tenho interesse no seguinte item: Produto: ${modelo} Categoria: ${categoria} Preço: ${preco}`
   );
   return `https://wa.me/${phone}?text=${message}`;
 };
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const whatsappLink = generateWhatsAppLink(product.modelo, product.preco);
   const category = categories.find((c) => c.id === product.categoria);
+  const whatsappLink = generateWhatsAppLink(product.modelo, category?.name || product.categoria, product.preco);
 
   const CategoryIcon = category?.icon;
 
