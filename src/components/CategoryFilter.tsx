@@ -10,7 +10,7 @@ interface CategoryFilterProps {
 const CategoryFilter = ({ activeCategory, onCategoryChange }: CategoryFilterProps) => {
   return (
     <div className="w-full px-2">
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 landscape:grid-cols-3 md:grid-cols-4 landscape:md:grid-cols-4">
         <button
           onClick={() => onCategoryChange(null)}
           className={cn(
