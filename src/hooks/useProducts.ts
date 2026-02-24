@@ -32,7 +32,7 @@ export function useProducts() {
   return useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    refetchOnWindowFocus: false,
+    staleTime: 2 * 60 * 1000, // Cache for 2 minutes
+    refetchOnWindowFocus: true,
   });
 }
