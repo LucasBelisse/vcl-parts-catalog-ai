@@ -10,16 +10,16 @@ interface CategoryFilterProps {
 const CategoryFilter = ({ activeCategory, onCategoryChange }: CategoryFilterProps) => {
   return (
     <div className="w-full px-1 sm:px-2">
-      <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2 landscape:grid-cols-3 md:grid-cols-4 landscape:md:grid-cols-4">
+      <div className="category-grid">
         <button
           onClick={() => onCategoryChange(null)}
           className={cn(
-            "category-pill flex flex-col items-center justify-center text-center py-3 px-1 min-h-[80px]",
+            "category-pill category-card",
             activeCategory === null && "category-pill-active"
           )}
         >
-          <LayoutGrid className="h-5 w-5 mb-1.5 shrink-0" />
-          <span className="text-[10px] sm:text-xs leading-tight break-words hyphens-auto min-h-[24px] flex items-center justify-center">Todos</span>
+          <LayoutGrid className="h-5 w-5 shrink-0" />
+          <span className="category-label">Todos</span>
         </button>
         {categories.map((category) => {
           const IconComponent = category.icon;
@@ -28,12 +28,12 @@ const CategoryFilter = ({ activeCategory, onCategoryChange }: CategoryFilterProp
               key={category.id}
               onClick={() => onCategoryChange(category.id as CategoryId)}
               className={cn(
-                "category-pill flex flex-col items-center justify-center text-center py-3 px-1 min-h-[80px]",
+                "category-pill category-card",
                 activeCategory === category.id && "category-pill-active"
               )}
             >
-              <IconComponent className="h-5 w-5 mb-1.5 shrink-0" style={{ color: category.color }} />
-              <span className="text-[10px] sm:text-xs leading-tight break-words hyphens-auto min-h-[24px] flex items-center justify-center">{category.name}</span>
+              <IconComponent className="h-5 w-5 shrink-0" style={{ color: category.color }} />
+              <span className="category-label">{category.name}</span>
             </button>
           );
         })}
