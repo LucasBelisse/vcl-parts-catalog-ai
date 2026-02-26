@@ -126,10 +126,10 @@ serve(async (req) => {
     const categoriaIndex = headerRow.indexOf('categoria');
     const modeloIndex = headerRow.indexOf('modelo');
     const precoIndex = headerRow.indexOf('preco');
-    const variacaoIndex = headerRow.indexOf('variacao');
+    // variacao column removed from spreadsheet
     
     console.log(`Headers: ${headerRow.join(', ')}`);
-    console.log(`Indices - categoria: ${categoriaIndex}, modelo: ${modeloIndex}, preco: ${precoIndex}, variacao: ${variacaoIndex}`);
+    console.log(`Indices - categoria: ${categoriaIndex}, modelo: ${modeloIndex}, preco: ${precoIndex}`);
     
     if (modeloIndex === -1) {
       console.error('MODELO column not found');
@@ -152,7 +152,6 @@ serve(async (req) => {
       const rawCategoria = categoriaIndex !== -1 ? row[categoriaIndex] : '';
       const modelo = row[modeloIndex]?.trim();
       const preco = precoIndex !== -1 && row[precoIndex] ? row[precoIndex].trim() : 'Consulte';
-      const variacao = variacaoIndex !== -1 && row[variacaoIndex] ? row[variacaoIndex].trim() : '';
       
       if (!modelo) continue;
       
@@ -168,12 +167,9 @@ serve(async (req) => {
       // Track category counts for logging
       categoryCount[categoriaId] = (categoryCount[categoriaId] || 0) + 1;
       
-      // Combine modelo with variacao for full product name if variacao exists
-      const fullModelo = variacao ? `${modelo} - ${variacao}` : modelo;
-      
       products.push({
         id: `${categoriaId}-${i}`,
-        modelo: fullModelo,
+        modelo,
         preco,
         categoria: categoriaId,
       });
