@@ -1,73 +1,19 @@
-# Welcome to your Lovable project
+# 🛒 Catálogo Virtual Inteligente | VCL Peças
+> **Sincronização em Tempo Real (Google Sheets) + Assistência de IA (Gemini)**
 
-## Project info
+Este projeto é uma solução de E-commerce B2B focada em automação de vendas e otimização logística. Ele transforma uma planilha de dados em uma interface interativa e inteligente para o cliente final.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🚀 Diferenciais do Projeto
+* **Arquitetura de Dados Dinâmica:** Utiliza **Google Sheets API** como um CMS (Content Management System) descentralizado, permitindo que a equipe comercial atualize preços e estoque sem tocar no código.
+* **Integração com IA Generativa:** Implementação da **API do Gemini (Google)** para processamento de linguagem natural, auxiliando o usuário na busca técnica de peças.
+* **Pipeline de Vendas Automatizado:** Captura de intenção de compra com estruturação de dados para fechamento via WhatsApp/API de comunicação.
+* **Performance & UX:** Desenvolvido com **React + Vite** para carregamento instantâneo e interface 100% responsiva (Mobile-First).
 
-## How can I edit this code?
+## 🛠️ Stack Tecnológica
+* **Frontend:** React.js, TypeScript, Tailwind CSS.
+* **Inteligência Artificial:** Google Gemini AI.
+* **Integração de Dados:** Google Cloud APIs (Sheets).
+* **Infraestrutura:** Deploy automatizado via Lovable / GitHub Actions.
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 📈 Impacto no Negócio
+Este sistema elimina o delay entre a atualização de estoque e a visualização do cliente, reduzindo erros manuais e acelerando o tempo de resposta do time de logística da **VCL Peças**.
